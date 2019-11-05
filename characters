@@ -1,0 +1,43 @@
+# Import libraries
+import requests
+from bs4 import BeautifulSoup
+
+# Set the URL you want to webscrape from
+url = 'https://legends.dbz.space/characters/'
+# Connect to the URL
+response = requests.get(url)
+#
+# # Parse HTML and save to BeautifulSoup object¶
+soup = BeautifulSoup(response.text, "html.parser")
+
+# print(response.status_code)
+
+b = soup.find("div",class_="chara list").find_all("a",limit=None)
+for x in b:
+    link = "https://legends.dbz.space" + x.attrs.get("href")
+    lresponse = requests.get(link)
+    lsoup = BeautifulSoup(lresponse.text, "html.parser")
+    # detail=lsoup.find("div",{"class":"char_box"})
+    detail=lsoup.find("div",class_="char_box")
+    title=detail.find("h1")
+    tags=detail.find_all("a",class_="tag")
+    mabilitie=detail.find("a",id="charamain").find_next_sibling().find("div",class_="form0").find_all(limit=2)
+    uabilities=detail.find("a",id="charaunique").find_next_sibling().find_all("div",class_="form0")
+    print("Charater Name : ",title.text)
+    print("Character Detail : ")
+    print("Tags :",end=" ")
+    for t in tags:
+        print(t.text , end=" ")
+    print()
+    print("Main Ability : ")
+    for m in mabilitie :
+        print(m.text)
+    print("Unique Abilities : ")
+    for u in uabilities :
+        uabilitie = u.find_all(limit=2)
+        for ua in uabilitie :
+            print(ua.text)
+
+    print()
+    print("-------------------------------------------------------------------------")
+    print()
